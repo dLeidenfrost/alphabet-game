@@ -1,0 +1,9 @@
+# Bun configuration file
+
+[install]
+# Auto-install peer dependencies
+auto = "auto"
+
+[test]
+# Test configuration
+preload = ["./test/setup.ts"]
