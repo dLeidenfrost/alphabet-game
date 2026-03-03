@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { db } from './db/index.js';
+import { exampleTable } from './db/schema.js';
 
 const fastify = Fastify({
   logger: true,
@@ -19,8 +20,8 @@ fastify.get('/api/health', async () => {
 // Example route using the database
 fastify.get('/api/example', async () => {
   // Example query (uncomment after creating your schema)
-  // const results = await db.select().from(exampleTable);
-  return { message: 'Replace this with your actual queries' };
+  const results = await db.select().from(exampleTable);
+  return { message: 'Replace this with your actual queries', results };
 });
 
 // Example POST route for game logic
