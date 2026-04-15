@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.2.0...alphabet-game-v0.2.1) (2026-04-15)
+
+
+### Bug Fixes
+
+* Added new hint column in questions table. ([323be4f](https://github.com/dLeidenfrost/alphabet-game/commit/323be4fa880360c7270af297f259cc36fe081dd6))
+
 ## [0.2.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.1.0...alphabet-game-v0.2.0) (2026-04-14)
 
 
