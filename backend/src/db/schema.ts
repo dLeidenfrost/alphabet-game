@@ -25,6 +25,7 @@ export const letters = sqliteTable('letters', {
 export const questions = sqliteTable('questions', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   question: text('question').notNull(),
+  hint: text('hint'),
   quizId: integer('quiz_id').notNull().references(() => quizzes.id),
   letterId: integer('letter_id').notNull().references(() => letters.id),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),

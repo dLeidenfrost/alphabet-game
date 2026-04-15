@@ -138,7 +138,7 @@ async function populateLettersTable() {
     console.log('Nothing to load into letters table.');
     return;
   }
-  const lettersToInsert: string = 'abcdefghijklmnñopqrstuvwxyz';
+  const lettersToInsert: string = 'abcdefghijklmnopqrstuvwxyz';
   const insertList = [];
   for (const letter of lettersToInsert) {
     insertList.push({ letter });
