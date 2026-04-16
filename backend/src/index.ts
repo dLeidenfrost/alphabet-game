@@ -2,7 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { db } from './db';
 import { answers, gameSessionQuestions, gameSessions, letters, questions, quizzes, users } from './db/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 const fastify = Fastify({
   logger: true,
@@ -115,6 +115,42 @@ fastify.post<{ Body: { questionId: number, gameSessionId: number, isAnswered: bo
     }
   }
   return { message: 'Cannnot add questions to game session (missing parameters)' };
+});
+
+fastify.get<{ Params: { id: string } }>('/api/users/:id', async (request, reply) => {
+  const id = Number(request.params.id);
+  const user = await db.query.users.findFirst({ where: eq(users.id, id) });
+  if (!user) return reply.code(404).send({ message: 'User not found' });
+  return user;
+});
+
+fastify.get('/api/quizzes', async () => {
+  return db.query.quizzes.findMany();
+});
+
+fastify.get<{ Querystring: { quizId: string, letterId: string } }>('/api/questions', async (request, reply) => {
+  const quizId = Number(request.query.quizId);
+  const letterId = Number(request.query.letterId);
+  if (!quizId || !letterId) return reply.code(400).send({ message: 'quizId and letterId are required' });
+  const question = await db.query.questions.findFirst({
+    where: and(eq(questions.quizId, quizId), eq(questions.letterId, letterId)),
+  });
+  if (!question) return reply.code(404).send({ message: 'Question not found' });
+  return question;
+});
+
+fastify.get('/api/letters', async () => {
+  return db.query.letters.findMany();
+});
+
+fastify.get<{ Querystring: { questionId: string, answer: string } }>('/api/answers/validate', async (request, reply) => {
+  const questionId = Number(request.query.questionId);
+  const { answer } = request.query;
+  if (!questionId || !answer) return reply.code(400).send({ message: 'questionId and answer are required' });
+  const stored = await db.query.answers.findFirst({ where: eq(answers.questionId, questionId) });
+  if (!stored) return reply.code(404).send({ message: 'Answer not found for this question' });
+  const isCorrect = stored.answer.toLowerCase() === answer.toLowerCase();
+  return { isCorrect };
 });
 
 fastify.patch<{ Body: { gameSessionQuestionId: number, isAnswered: boolean } }>('/api/game-sessions-questions/update', async (request) => {
