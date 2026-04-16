@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.5.0...alphabet-game-v0.6.0) (2026-04-16)
+
+
+### Features
+
+* add frontend API client functions ([#12](https://github.com/dLeidenfrost/alphabet-game/issues/12)) ([721c6f1](https://github.com/dLeidenfrost/alphabet-game/commit/721c6f1a76584fc7648a2a4a45f5dc3b33f1785a))
+
 ## [0.5.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.4.0...alphabet-game-v0.5.0) (2026-04-16)
 
 
