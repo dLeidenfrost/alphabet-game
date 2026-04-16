@@ -1,4 +1,12 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+@theme {
+  --color-primary: oklch(0.4699 0.0327 298.86);
+  --color-secondary: oklch(0.6744 0.1772 282.01);
+
+  --font-inter: 'Inter Variable', sans-serif;
+}
 
 @theme {
   --color-primary: oklch(0.4699 0.0327 298.86);

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.3.0...alphabet-game-v0.4.0) (2026-04-16)
+
+
+### Features
+
+* add Inter font and extend Tailwind theme ([#8](https://github.com/dLeidenfrost/alphabet-game/issues/8)) ([5737314](https://github.com/dLeidenfrost/alphabet-game/commit/57373145ac73d648271d6a5e3186975be69a3ec4))
+
 ## [0.3.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.2.1...alphabet-game-v0.3.0) (2026-04-16)
 
 
