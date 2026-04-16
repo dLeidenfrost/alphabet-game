@@ -1,7 +1,13 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: oklch(0.4699 0.0327 298.86);
+  --color-secondary: oklch(0.6744 0.1772 282.01);
+}
+
 body {
-  margin: 0;
+  width: 375px;
+  margin: 0 auto;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;

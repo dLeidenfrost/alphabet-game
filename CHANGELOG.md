@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.2.1...alphabet-game-v0.3.0) (2026-04-16)
+
+
+### Features
+
+* add SolidJS routing with HomeScreen, PlayScreen, and FinishScreen pages ([#6](https://github.com/dLeidenfrost/alphabet-game/issues/6)) ([a7dd60c](https://github.com/dLeidenfrost/alphabet-game/commit/a7dd60cf447ee57c3f53c93ca69d3b9a0d24a959))
+
 ## [0.2.1](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.2.0...alphabet-game-v0.2.1) (2026-04-15)
 
 
