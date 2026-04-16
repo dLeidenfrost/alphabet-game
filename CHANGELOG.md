@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.4.0...alphabet-game-v0.5.0) (2026-04-16)
+
+
+### Features
+
+* add GET routes for users, quizzes, questions, letters, and answer validation ([#10](https://github.com/dLeidenfrost/alphabet-game/issues/10)) ([fac0ef7](https://github.com/dLeidenfrost/alphabet-game/commit/fac0ef7849a2d9b053123d9bae2288dd709a8242))
+
 ## [0.4.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.3.0...alphabet-game-v0.4.0) (2026-04-16)
 
 
