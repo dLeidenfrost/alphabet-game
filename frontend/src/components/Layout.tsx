@@ -12,7 +12,7 @@ function Layout(props: LayoutProps) {
         <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">
           A
         </div>
-        <span class="text-xl font-bold text-gray-800">Alphabet Game</span>
+        <span class="text-xl font-bold text-primary">Alphabet Game</span>
       </header>
       <main class="max-w-4xl mx-auto px-4 py-8">
         {props.children}
