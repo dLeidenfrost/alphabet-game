@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.6.0...alphabet-game-v0.7.0) (2026-04-17)
+
+
+### Features
+
+* add pagination and genre/description fields to quizzes ([#15](https://github.com/dLeidenfrost/alphabet-game/issues/15)) ([df842cf](https://github.com/dLeidenfrost/alphabet-game/commit/df842cfb1dfed4616223b3fb8f4fb3826736897a))
+
 ## [0.6.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.5.0...alphabet-game-v0.6.0) (2026-04-16)
 
 
