@@ -2,7 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { db } from './db';
 import { answers, gameSessionQuestions, gameSessions, letters, questions, quizzes, users } from './db/schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 
 const fastify = Fastify({
   logger: true,
@@ -124,8 +124,19 @@ fastify.get<{ Params: { id: string } }>('/api/users/:id', async (request, reply)
   return user;
 });
 
-fastify.get('/api/quizzes', async () => {
-  return db.query.quizzes.findMany();
+fastify.get<{ Querystring: { page?: string; rowsPerPage?: string } }>('/api/quizzes', async (request) => {
+  const page = Math.max(1, Number(request.query.page ?? 1));
+  const rowsPerPage = Math.min(100, Math.max(1, Number(request.query.rowsPerPage ?? 10)));
+  const offset = (page - 1) * rowsPerPage;
+
+  const [{ total }] = await db.select({ total: sql<number>`count(*)` }).from(quizzes);
+  const data = await db.query.quizzes.findMany({ limit: rowsPerPage, offset });
+
+  return {
+    data,
+    total,
+    totalPages: Math.ceil(total / rowsPerPage),
+  };
 });
 
 fastify.get<{ Querystring: { quizId: string, letterId: string } }>('/api/questions', async (request, reply) => {

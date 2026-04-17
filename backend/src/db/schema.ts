@@ -11,6 +11,8 @@ export const users = sqliteTable('users', {
 export const quizzes = sqliteTable('quizzes', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   quizName: text('quiz_name').notNull().unique(),
+  genre: text('genre'),
+  description: text('description'),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });

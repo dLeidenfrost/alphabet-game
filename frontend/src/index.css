@@ -11,11 +11,6 @@
   --font-inter: 'Inter Variable', sans-serif;
 }
 
-@theme {
-  --color-primary: oklch(0.4699 0.0327 298.86);
-  --color-secondary: oklch(0.6744 0.1772 282.01);
-}
-
 body {
   max-width: 375px;
   margin: 0 auto;
