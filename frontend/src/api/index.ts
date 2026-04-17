@@ -15,8 +15,16 @@ export interface User {
 export interface Quiz {
   id: number;
   quizName: string;
+  genre: string | null;
+  description: string | null;
   createdAt: number | null;
   updatedAt: number | null;
+}
+
+export interface PaginatedQuizzes {
+  data: Quiz[];
+  total: number;
+  totalPages: number;
 }
 
 export interface Letter {
@@ -46,8 +54,12 @@ export async function getUserById(id: number): Promise<User> {
 
 // --- Quizzes ---
 
-export async function getQuizzes(): Promise<Quiz[]> {
-  const response = await fetch(`${API_BASE}/quizzes`);
+export async function getQuizzes(params?: { page?: number; rowsPerPage?: number }): Promise<PaginatedQuizzes> {
+  const query = new URLSearchParams();
+  if (params?.page != null) query.set('page', String(params.page));
+  if (params?.rowsPerPage != null) query.set('rowsPerPage', String(params.rowsPerPage));
+  const url = query.toString() ? `${API_BASE}/quizzes?${query}` : `${API_BASE}/quizzes`;
+  const response = await fetch(url);
   if (!response.ok) throw new Error('Failed to get quizzes');
   return response.json();
 }
