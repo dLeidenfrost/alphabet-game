@@ -1,3 +1,4 @@
+import { A } from '@solidjs/router';
 import { JSX } from 'solid-js';
 
 interface LayoutProps {
@@ -6,13 +7,14 @@ interface LayoutProps {
 
 function Layout(props: LayoutProps) {
   return (
-    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <header class="bg-white shadow-sm px-6 py-4 flex items-center gap-3">
-        {/* TODO: Replace placeholder logo with real logo */}
-        <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">
-          A
+    <div class="min-h-screen bg-white">
+      <header class="bg-white p-5 border-b border-gray-200">
+        <div class="flex">
+          <A href="/" class="flex items-center gap-2.5">
+            <div class="w-8 h-8 flex items-center justify-center rounded-lg text-white font-semibold text-sm bg-gradient-to-b from-[oklch(0.72_0.18_287)] to-[oklch(0.47_0.03_299)]">Az</div>
+            <span class="text-xl font-normal text-black">Alphabetix</span>
+          </A>
         </div>
-        <span class="text-xl font-bold text-primary">Alphabet Game</span>
       </header>
       <main class="max-w-4xl mx-auto px-4 py-8">
         {props.children}
