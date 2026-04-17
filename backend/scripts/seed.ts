@@ -20,13 +20,15 @@ const LETTERS = [
 // ─── Seed data ────────────────────────────────────────────────────────────────
 
 type Entry = { answer: string; startsWith: boolean };
-type QuizDef = { name: string; label: string; data: Record<string, Entry> };
+type QuizDef = { name: string; label: string; genre: string; description: string; data: Record<string, Entry> };
 
 const quizDefinitions: QuizDef[] = [
   // ── 1. Classic Video Games ─────────────────────────────────────────────────
   {
     name: 'Classic Video Games',
     label: 'classic video game',
+    genre: 'Video Games',
+    description: 'Name a classic video game for each letter — from arcade cabinets to early consoles.',
     data: {
       a: { answer: 'Asteroids',              startsWith: true  },
       b: { answer: 'Battletoads',            startsWith: true  },
@@ -62,6 +64,8 @@ const quizDefinitions: QuizDef[] = [
   {
     name: 'Modern Video Games',
     label: 'modern video game',
+    genre: 'Video Games',
+    description: 'Think of a modern video game for every letter of the alphabet.',
     data: {
       a: { answer: 'Apex Legends',               startsWith: true  },
       b: { answer: "Baldur's Gate 3",            startsWith: true  },
@@ -97,6 +101,8 @@ const quizDefinitions: QuizDef[] = [
   {
     name: 'Nintendo Games',
     label: 'Nintendo game',
+    genre: 'Video Games',
+    description: 'Can you name a Nintendo game for each letter? Mario, Zelda, and beyond.',
     data: {
       a: { answer: 'Animal Crossing: New Horizons',    startsWith: true  },
       b: { answer: 'Bayonetta',                        startsWith: true  },
@@ -132,6 +138,8 @@ const quizDefinitions: QuizDef[] = [
   {
     name: 'Video Game Characters',
     label: 'video game character',
+    genre: 'Video Games',
+    description: 'Name a memorable video game character for each letter of the alphabet.',
     data: {
       a: { answer: 'Aloy',             startsWith: true  },
       b: { answer: 'Bowser',           startsWith: true  },
@@ -167,6 +175,8 @@ const quizDefinitions: QuizDef[] = [
   {
     name: 'Classic Movies',
     label: 'classic movie',
+    genre: 'Movies',
+    description: 'Think of a classic film for each letter — Hollywood golden age and beyond.',
     data: {
       a: { answer: 'Alien',                         startsWith: true  },
       b: { answer: 'Ben-Hur',                       startsWith: true  },
@@ -202,6 +212,8 @@ const quizDefinitions: QuizDef[] = [
   {
     name: 'Action Movies',
     label: 'action movie',
+    genre: 'Movies',
+    description: 'Name an action-packed movie for every letter of the alphabet.',
     data: {
       a: { answer: 'Avengers: Endgame',        startsWith: true  },
       b: { answer: 'Black Hawk Down',          startsWith: true  },
@@ -237,6 +249,8 @@ const quizDefinitions: QuizDef[] = [
   {
     name: 'Animated Movies',
     label: 'animated movie',
+    genre: 'Movies',
+    description: 'From Disney to Pixar and more — name an animated film for each letter.',
     data: {
       a: { answer: 'Aladdin',                       startsWith: true  },
       b: { answer: 'Beauty and the Beast',          startsWith: true  },
@@ -272,6 +286,8 @@ const quizDefinitions: QuizDef[] = [
   {
     name: 'Soccer Players',
     label: 'soccer player',
+    genre: 'Soccer',
+    description: 'Name a soccer player for each letter — legends and current stars included.',
     data: {
       a: { answer: 'Antoine Griezmann',  startsWith: true  },
       b: { answer: 'Bukayo Saka',        startsWith: true  },
@@ -307,6 +323,8 @@ const quizDefinitions: QuizDef[] = [
   {
     name: 'Soccer Teams',
     label: 'soccer team',
+    genre: 'Soccer',
+    description: 'Can you think of a soccer club for every letter of the alphabet?',
     data: {
       a: { answer: 'Ajax',                       startsWith: true  },
       b: { answer: 'Barcelona',                  startsWith: true  },
@@ -342,6 +360,8 @@ const quizDefinitions: QuizDef[] = [
   {
     name: 'Soccer Legends',
     label: 'soccer legend',
+    genre: 'Soccer',
+    description: 'Name an all-time soccer legend for each letter — the greatest to ever play.',
     data: {
       a: { answer: 'Alfredo Di Stéfano', startsWith: true  },
       b: { answer: 'Bobby Charlton',     startsWith: true  },
@@ -424,8 +444,14 @@ async function seed() {
   for (const quiz of quizDefinitions) {
     console.log(`\n  Quiz: "${quiz.name}"`);
 
-    // Insert quiz
-    db.insert(schema.quizzes).values({ quizName: quiz.name }).onConflictDoNothing().run();
+    // Insert quiz (or update genre/description if it already exists)
+    db.insert(schema.quizzes)
+      .values({ quizName: quiz.name, genre: quiz.genre, description: quiz.description })
+      .onConflictDoUpdate({
+        target: schema.quizzes.quizName,
+        set: { genre: quiz.genre, description: quiz.description },
+      })
+      .run();
     const quizRow = db.select().from(schema.quizzes).where(eq(schema.quizzes.quizName, quiz.name)).get();
     if (!quizRow) throw new Error(`Failed to find/create quiz: ${quiz.name}`);
 
