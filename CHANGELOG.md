@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.8.0...alphabet-game-v0.9.0) (2026-04-18)
+
+
+### Features
+
+* Added inifinite scroll functionality to HomeScreen ([#19](https://github.com/dLeidenfrost/alphabet-game/issues/19)) ([cf9847c](https://github.com/dLeidenfrost/alphabet-game/commit/cf9847cfc87dab943a279fcd33bb82241ec721dd))
+
 ## [0.8.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.7.0...alphabet-game-v0.8.0) (2026-04-17)
 
 
