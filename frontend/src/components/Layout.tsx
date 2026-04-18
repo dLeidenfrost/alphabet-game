@@ -7,7 +7,7 @@ interface LayoutProps {
 
 function Layout(props: LayoutProps) {
   return (
-    <div class="min-h-screen bg-white">
+    <div class="bg-white">
       <header class="bg-white p-5 border-b border-gray-200">
         <div class="flex">
           <A href="/" class="flex items-center gap-2.5">
@@ -16,7 +16,7 @@ function Layout(props: LayoutProps) {
           </A>
         </div>
       </header>
-      <main class="max-w-4xl mx-auto px-4 py-8">
+      <main class="max-w-4xl mx-auto px-4 py-8 max-h-[600px] overflow-auto">
         {props.children}
       </main>
     </div>
