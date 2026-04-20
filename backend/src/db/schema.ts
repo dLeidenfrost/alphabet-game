@@ -13,6 +13,8 @@ export const quizzes = sqliteTable('quizzes', {
   quizName: text('quiz_name').notNull().unique(),
   genre: text('genre'),
   description: text('description'),
+  timeLimit: integer('time_limit'), // save in seconds
+  difficulty: text('difficulty'),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
