@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.9.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.8.0...alphabet-game-v0.9.0) (2026-04-18)
+
+
+### Features
+
+* Added inifinite scroll functionality to HomeScreen ([#19](https://github.com/dLeidenfrost/alphabet-game/issues/19)) ([cf9847c](https://github.com/dLeidenfrost/alphabet-game/commit/cf9847cfc87dab943a279fcd33bb82241ec721dd))
+
+## [0.8.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.7.0...alphabet-game-v0.8.0) (2026-04-17)
+
+
+### Features
+
+* seed genre and description for all quizzes ([#17](https://github.com/dLeidenfrost/alphabet-game/issues/17)) ([8277e83](https://github.com/dLeidenfrost/alphabet-game/commit/8277e832c52d8ddbdc38a7887b4e3f148ada4df3))
+
+## [0.7.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.6.0...alphabet-game-v0.7.0) (2026-04-17)
+
+
+### Features
+
+* add pagination and genre/description fields to quizzes ([#15](https://github.com/dLeidenfrost/alphabet-game/issues/15)) ([df842cf](https://github.com/dLeidenfrost/alphabet-game/commit/df842cfb1dfed4616223b3fb8f4fb3826736897a))
+
 ## [0.6.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.5.0...alphabet-game-v0.6.0) (2026-04-16)
 
 
