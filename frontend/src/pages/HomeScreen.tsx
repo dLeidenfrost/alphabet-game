@@ -57,7 +57,7 @@ function HomeScreen() {
             <For each={quizzes()}>
               {(item) => {
                 return (
-                  <li role="button" onClick={() => onClick(item.id)} class={clsx("group rounded-lg hover:bg-primary hover:text-white h-full w-full p-4", selected() === item.id ? "bg-primary" : "bg-list-item")}>
+                  <li role="button" onClick={() => onClick(item.id)} class={clsx("group rounded-lg hover:bg-primary hover:text-white h-full w-full p-4 transition", selected() === item.id ? "bg-primary" : "bg-list-item")}>
                     <div class="flex gap-2">
                       <div class="bg-slate-200 w-8 h-8 rounded-lg mt-0.5" />
                       <div class="flex flex-col">
