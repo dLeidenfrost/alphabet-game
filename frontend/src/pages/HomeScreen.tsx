@@ -1,8 +1,9 @@
-import { createEffect, createResource, createSignal, For, onCleanup, onMount, Show } from 'solid-js';
+import { createEffect, createResource, createSignal, For, onCleanup, Show } from 'solid-js';
 import Layout from '../components/Layout';
 import { getQuizzes, Quiz } from '../api';
 import clsx from 'clsx';
 import { A } from '@solidjs/router';
+import { Button } from '../components/Button';
 
 function HomeScreen() {
   const [page, setPage] = createSignal(1);
@@ -56,7 +57,7 @@ function HomeScreen() {
             <For each={quizzes()}>
               {(item) => {
                 return (
-                  <li role="button" onClick={() => onClick(item.id)} class={clsx("group rounded-lg hover:bg-primary hover:text-white h-full w-full p-4", selected() === item.id ? "bg-primary" : "bg-list-item")}>
+                  <li role="button" onClick={() => onClick(item.id)} class={clsx("group rounded-lg hover:bg-primary hover:text-white h-full w-full p-4 transition", selected() === item.id ? "bg-primary" : "bg-list-item")}>
                     <div class="flex gap-2">
                       <div class="bg-slate-200 w-8 h-8 rounded-lg mt-0.5" />
                       <div class="flex flex-col">
@@ -68,16 +69,19 @@ function HomeScreen() {
                       <div class="border-t border-gray-200 mt-4 pt-4 text-left flex flex-col gap-4">
                         <p class="text-sm text-white/85">{item.description}</p>
                         <div class="flex items-center gap-3 text-sm">
-                          <div class="flex items-center gap-1">
-                            <p class="text-white">5:00</p>
-                            <p class="text-white/60">time</p>
-                          </div>
-                          <div class="flex items-center gap-1">
-                            <p class="text-white">Medium</p>
+                          <Show when={Boolean(item.timeLimit)}>
+                            <div class="flex items-center gap-1">
+                              <p class="text-white">{item.timeLimit}</p>
+                              <p class="text-white/60">time</p>
+                            </div>
+                          </Show>
+                          <div class="flex items-center">
+                            <p class="text-white font-bold mr-1">Difficulty:</p>
+                            <p class="text-white">{item.difficulty}</p>
                           </div>
                         </div>
                         <A href="/play">
-                          <button class="h-11 w-full rounded-lg bg-secondary text-white hover:bg-secondary/60 hover:cursor-pointer" onClick={onStartQuiz}>Start quiz</button>
+                          <Button onClick={onStartQuiz} />
                         </A>
                       </div>
                     </Show>

@@ -17,6 +17,8 @@ export interface Quiz {
   quizName: string;
   genre: string | null;
   description: string | null;
+  difficulty: string | null;
+  timeLimit: number | null;
   createdAt: number | null;
   updatedAt: number | null;
 }
