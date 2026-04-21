@@ -1,12 +1,11 @@
-import Layout from '../components/Layout';
+import { PlayLayout } from '../components/layout';
 
 function PlayScreen() {
-  // TODO: Add play screen content (e.g. question display, answer input, score)
   return (
-    <Layout>
+    <PlayLayout timeLimit={180}>
       {/* font-inter uses the Inter Variable font defined in the Tailwind theme */}
       <div class="font-inter">PlayScreen</div>
-    </Layout>
+    </PlayLayout>
   );
 }
 
