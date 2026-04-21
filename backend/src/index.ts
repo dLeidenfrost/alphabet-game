@@ -150,6 +150,17 @@ fastify.get<{ Querystring: { quizId: string, letterId: string } }>('/api/questio
   return question;
 });
 
+fastify.get<{ Params: { id: string } }>('/api/quizzes/:id/questions', async (request, reply) => {
+  const quizId = Number(request.params.id);
+  const quiz = await db.query.quizzes.findFirst({ where: eq(quizzes.id, quizId) });
+  if (!quiz) return reply.code(404).send({ message: 'Quiz not found' });
+  const result = await db
+    .select({ hint: questions.hint, question: questions.question })
+    .from(questions)
+    .where(eq(questions.quizId, quizId));
+  return result;
+});
+
 fastify.get('/api/letters', async () => {
   return db.query.letters.findMany();
 });
