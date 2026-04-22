@@ -99,22 +99,41 @@ fastify.post<{ Body: { userId: number, quizId: number, currentQuestionId: number
   return { message: 'Cannnot initiate game session (missing parameters)' };
 });
 
-fastify.post<{ Body: { questionId: number, gameSessionId: number, isAnswered: boolean } }>('/api/game-sessions-questions/create', async (request) => {
-  const { questionId, gameSessionId, isAnswered } = request.body;
-  if (questionId && gameSessionId) {
-    try {
-      const gameSession = await db.query.gameSessions.findFirst({ where: eq(gameSessions.id, gameSessionId) });
-      const question = await db.query.questions.findFirst({ where: eq(questions.id, questionId) });
-      if (question?.id && gameSession?.id) {
-        await db.insert(gameSessionQuestions).values({ questionId: question.id, gameSessionId: gameSession.id, isAnswered });
-        return { message: `Questions added for game session (${gameSession.id})` };
-      }
-    } catch (e) {
-      console.error('Error adding questions to game session', e);
-      return;
-    }
+fastify.post<{ Params: { sessionId: string }, Body: { questionId: number, answer: string } }>('/api/game-sessions/:sessionId/answer', async (request, reply) => {
+  const sessionId = Number(request.params.sessionId);
+  const { questionId, answer } = request.body;
+
+  if (!sessionId || !questionId || !answer) {
+    return reply.code(400).send({ message: 'sessionId, questionId and answer are required' });
   }
-  return { message: 'Cannnot add questions to game session (missing parameters)' };
+
+  const gameSession = await db.query.gameSessions.findFirst({ where: eq(gameSessions.id, sessionId) });
+  if (!gameSession) return reply.code(404).send({ message: 'Game session not found' });
+
+  const question = await db.query.questions.findFirst({ where: eq(questions.id, questionId) });
+  if (!question) return reply.code(404).send({ message: 'Question not found' });
+
+  const stored = await db.query.answers.findFirst({ where: eq(answers.questionId, questionId) });
+  if (!stored) return reply.code(404).send({ message: 'Answer not found for this question' });
+
+  const isCorrect = stored.answer.toLowerCase() === answer.toLowerCase();
+
+  const existing = await db.query.gameSessionQuestions.findFirst({
+    where: and(eq(gameSessionQuestions.gameSessionId, sessionId), eq(gameSessionQuestions.questionId, questionId)),
+  });
+
+  let gameSessionQuestionId: number;
+  if (existing) {
+    await db.update(gameSessionQuestions).set({ isAnswered: isCorrect }).where(eq(gameSessionQuestions.id, existing.id));
+    gameSessionQuestionId = existing.id;
+  } else {
+    const [inserted] = await db.insert(gameSessionQuestions)
+      .values({ gameSessionId: sessionId, questionId, isAnswered: isCorrect })
+      .returning({ id: gameSessionQuestions.id });
+    gameSessionQuestionId = inserted.id;
+  }
+
+  return { isCorrect, gameSessionQuestionId };
 });
 
 fastify.get<{ Params: { id: string } }>('/api/users/:id', async (request, reply) => {
@@ -155,7 +174,7 @@ fastify.get<{ Params: { id: string } }>('/api/quizzes/:id/questions', async (req
   const quiz = await db.query.quizzes.findFirst({ where: eq(quizzes.id, quizId) });
   if (!quiz) return reply.code(404).send({ message: 'Quiz not found' });
   const result = await db
-    .select({ hint: questions.hint, question: questions.question })
+    .select({ hint: questions.hint, question: questions.question, id: questions.id })
     .from(questions)
     .where(eq(questions.quizId, quizId));
   return result;
@@ -165,29 +184,6 @@ fastify.get('/api/letters', async () => {
   return db.query.letters.findMany();
 });
 
-fastify.get<{ Querystring: { questionId: string, answer: string } }>('/api/answers/validate', async (request, reply) => {
-  const questionId = Number(request.query.questionId);
-  const { answer } = request.query;
-  if (!questionId || !answer) return reply.code(400).send({ message: 'questionId and answer are required' });
-  const stored = await db.query.answers.findFirst({ where: eq(answers.questionId, questionId) });
-  if (!stored) return reply.code(404).send({ message: 'Answer not found for this question' });
-  const isCorrect = stored.answer.toLowerCase() === answer.toLowerCase();
-  return { isCorrect };
-});
-
-fastify.patch<{ Body: { gameSessionQuestionId: number, isAnswered: boolean } }>('/api/game-sessions-questions/update', async (request) => {
-  const { gameSessionQuestionId, isAnswered } = request.body;
-  if (gameSessionQuestionId && isAnswered != null) {
-    try {
-      await db.update(gameSessionQuestions).set({ isAnswered }).where(eq(gameSessionQuestions.id, gameSessionQuestionId));
-      return { message: `Game session question updated (${gameSessionQuestionId})` };
-    } catch (e) {
-      console.error('Error updating game session question', e);
-      return;
-    }
-  }
-  return { message: 'Game session question not updated (missing parameters)' };
-});
 
 async function populateLettersTable() {
   // Check if table is empty
