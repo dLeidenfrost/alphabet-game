@@ -1,6 +1,7 @@
 import { JSX, mergeProps } from "solid-js";
 import { useTimer } from "../../helpers/timer";
 import clsx from "clsx";
+import { A } from "@solidjs/router";
 
 interface LayoutProps {
   children: JSX.Element;
@@ -12,15 +13,17 @@ export function PlayLayout(props: LayoutProps) {
   const { formatTime, timeLeft } = useTimer(() => merged.timeLimit);
 
   return (
-    <div class="bg-white">
-      <header class="bg-white border-b border-gray-200">
+    <div class="bg-gray-100">
+      <header class="bg-white border-b border-gray-200 bg-white">
         <div class="flex items-center p-5">
-          <button class="flex items-center gap-1 hover:cursor-pointer text-gray-600">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-            </svg>
-            <span class="text-sm">Leave</span>
-          </button>
+          <A href="/">
+            <button class="flex items-center gap-1 hover:cursor-pointer text-gray-600">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+              </svg>
+              <span class="text-sm">Leave</span>
+            </button>
+          </A>
           <div class="flex ml-auto">
             <div class="flex items-center gap-1 text-xs">
               <span class="text-green-500 font-semibold">6</span>
@@ -41,7 +44,7 @@ export function PlayLayout(props: LayoutProps) {
           <div class={clsx('bg-green-400 h-full origin-left transition-transform duration-1000 ease-linear')} style={{ transform: `scaleX(${timeLeft() / merged.timeLimit})` }} />
         </div>
       </header>
-      <main class="max-w-4xl mx-auto px-4 py-8 max-h-[600px] overflow-auto">
+      <main class="max-w-4xl mx-auto pt-4 max-h-[600px] overflow-auto">
         {props.children}
       </main>
     </div>

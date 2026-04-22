@@ -81,7 +81,7 @@ function HomeScreen() {
                           </div>
                         </div>
                         <A href="/play">
-                          <Button onClick={onStartQuiz} />
+                          <Button onClick={onStartQuiz}>Start Quiz</Button>
                         </A>
                       </div>
                     </Show>
