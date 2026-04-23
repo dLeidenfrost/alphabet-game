@@ -79,6 +79,8 @@ export async function getLetters(): Promise<Letter[]> {
 export interface QuizQuestion {
   question: string;
   hint: string | null;
+  id: number;
+  letterId: number;
 }
 
 export async function getQuizQuestions(quizId: number): Promise<QuizQuestion[]> {
