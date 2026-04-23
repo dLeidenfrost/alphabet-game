@@ -1,7 +1,7 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { db } from './db';
-import { answers, gameSessionQuestions, gameSessions, letters, questions, quizzes, users } from './db/schema';
+import { answers, gameSessions, letters, questions, quizzes, users } from './db/schema';
 import { and, eq, sql } from 'drizzle-orm';
 
 const fastify = Fastify({
@@ -99,41 +99,19 @@ fastify.post<{ Body: { userId: number, quizId: number, currentQuestionId: number
   return { message: 'Cannnot initiate game session (missing parameters)' };
 });
 
-fastify.post<{ Params: { sessionId: string }, Body: { questionId: number, answer: string } }>('/api/game-sessions/:sessionId/answer', async (request, reply) => {
-  const sessionId = Number(request.params.sessionId);
-  const { questionId, answer } = request.body;
+fastify.get<{ Params: { questionId: number, answer: string } }>('/api/answers/validate', async (request, reply) => {
+  const { questionId, answer } = request.params;
 
-  if (!sessionId || !questionId || !answer) {
+  if (!questionId || !answer) {
     return reply.code(400).send({ message: 'sessionId, questionId and answer are required' });
   }
-
-  const gameSession = await db.query.gameSessions.findFirst({ where: eq(gameSessions.id, sessionId) });
-  if (!gameSession) return reply.code(404).send({ message: 'Game session not found' });
-
-  const question = await db.query.questions.findFirst({ where: eq(questions.id, questionId) });
-  if (!question) return reply.code(404).send({ message: 'Question not found' });
 
   const stored = await db.query.answers.findFirst({ where: eq(answers.questionId, questionId) });
   if (!stored) return reply.code(404).send({ message: 'Answer not found for this question' });
 
   const isCorrect = stored.answer.toLowerCase() === answer.toLowerCase();
 
-  const existing = await db.query.gameSessionQuestions.findFirst({
-    where: and(eq(gameSessionQuestions.gameSessionId, sessionId), eq(gameSessionQuestions.questionId, questionId)),
-  });
-
-  let gameSessionQuestionId: number;
-  if (existing) {
-    await db.update(gameSessionQuestions).set({ isAnswered: isCorrect }).where(eq(gameSessionQuestions.id, existing.id));
-    gameSessionQuestionId = existing.id;
-  } else {
-    const [inserted] = await db.insert(gameSessionQuestions)
-      .values({ gameSessionId: sessionId, questionId, isAnswered: isCorrect })
-      .returning({ id: gameSessionQuestions.id });
-    gameSessionQuestionId = inserted.id;
-  }
-
-  return { isCorrect, gameSessionQuestionId };
+  return { isCorrect };
 });
 
 fastify.get<{ Params: { id: string } }>('/api/users/:id', async (request, reply) => {
