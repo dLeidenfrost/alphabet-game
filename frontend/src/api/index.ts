@@ -2,10 +2,6 @@ const API_BASE = '/api'; // Proxied through Vite to http://localhost:3000
 
 // --- Types ---
 
-export interface MessageResponse {
-  message: string;
-}
-
 export interface User {
   id: number;
   username: string;
@@ -79,6 +75,8 @@ export async function getLetters(): Promise<Letter[]> {
 export interface QuizQuestion {
   question: string;
   hint: string | null;
+  id: number;
+  letterId: number;
 }
 
 export async function getQuizQuestions(quizId: number): Promise<QuizQuestion[]> {
@@ -95,55 +93,15 @@ export async function getQuestion(quizId: number, letterId: number): Promise<Que
 
 // --- Answers ---
 
-export async function validateAnswer(questionId: number, answer: string): Promise<ValidateAnswerResponse> {
-  const params = new URLSearchParams({ questionId: String(questionId), answer });
-  const response = await fetch(`${API_BASE}/answers/validate?${params}`);
-  if (!response.ok) throw new Error('Failed to validate answer');
-  return response.json();
-}
-
-// --- Game Sessions ---
-
-export async function createGameSession(params: {
-  userId: number;
-  quizId: number;
-  currentQuestionId?: number;
-  score?: number;
-}): Promise<MessageResponse> {
-  const response = await fetch(`${API_BASE}/game-sessions/create`, {
+export async function validateAnswer(sessionId: number, params: { questionId: number, answer: string }): Promise<ValidateAnswerResponse> {
+  const response = await fetch(`${API_BASE}/game-sessions/${sessionId}/answer`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
   });
-  if (!response.ok) throw new Error('Failed to create game session');
+  if (!response.ok) throw new Error('Failed to validate answer');
   return response.json();
 }
 
-// --- Game Session Questions ---
-
-export async function createGameSessionQuestion(
-  questionId: number,
-  gameSessionId: number,
-  isAnswered: boolean,
-): Promise<MessageResponse> {
-  const response = await fetch(`${API_BASE}/game-sessions-questions/create`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ questionId, gameSessionId, isAnswered }),
-  });
-  if (!response.ok) throw new Error('Failed to add question to game session');
-  return response.json();
-}
-
-export async function updateGameSessionQuestion(
-  gameSessionQuestionId: number,
-  isAnswered: boolean,
-): Promise<MessageResponse> {
-  const response = await fetch(`${API_BASE}/game-sessions-questions/update`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ gameSessionQuestionId, isAnswered }),
-  });
-  if (!response.ok) throw new Error('Failed to update game session question');
-  return response.json();
-}
+// Game sessions and game session questions are managed locally.
+// See frontend/src/db/operations.ts for createGameSession and upsertGameSessionQuestion.

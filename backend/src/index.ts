@@ -174,7 +174,7 @@ fastify.get<{ Params: { id: string } }>('/api/quizzes/:id/questions', async (req
   const quiz = await db.query.quizzes.findFirst({ where: eq(quizzes.id, quizId) });
   if (!quiz) return reply.code(404).send({ message: 'Quiz not found' });
   const result = await db
-    .select({ hint: questions.hint, question: questions.question, id: questions.id })
+    .select({ hint: questions.hint, question: questions.question, id: questions.id, letterId: questions.letterId })
     .from(questions)
     .where(eq(questions.quizId, quizId));
   return result;
