@@ -5,7 +5,7 @@ interface LayoutProps {
   children: JSX.Element;
 }
 
-function Layout(props: LayoutProps) {
+export function Layout(props: LayoutProps) {
   return (
     <div class="bg-white">
       <header class="bg-white p-5 border-b border-gray-200">
@@ -22,5 +22,3 @@ function Layout(props: LayoutProps) {
     </div>
   );
 }
-
-export default Layout;

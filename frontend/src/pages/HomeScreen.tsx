@@ -1,9 +1,9 @@
 import { createEffect, createResource, createSignal, For, onCleanup, Show } from 'solid-js';
-import Layout from '../components/Layout';
 import { getQuizzes, Quiz } from '../api';
 import clsx from 'clsx';
 import { A } from '@solidjs/router';
 import { Button } from '../components/Button';
+import { Layout } from '../components/layout';
 
 function HomeScreen() {
   const [page, setPage] = createSignal(1);
@@ -81,7 +81,7 @@ function HomeScreen() {
                           </div>
                         </div>
                         <A href="/play">
-                          <Button onClick={onStartQuiz} />
+                          <Button onClick={onStartQuiz}>Start Quiz</Button>
                         </A>
                       </div>
                     </Show>

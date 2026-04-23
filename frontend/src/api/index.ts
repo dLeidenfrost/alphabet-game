@@ -79,6 +79,8 @@ export async function getLetters(): Promise<Letter[]> {
 export interface QuizQuestion {
   question: string;
   hint: string | null;
+  id: number;
+  letterId: number;
 }
 
 export async function getQuizQuestions(quizId: number): Promise<QuizQuestion[]> {
@@ -95,9 +97,12 @@ export async function getQuestion(quizId: number, letterId: number): Promise<Que
 
 // --- Answers ---
 
-export async function validateAnswer(questionId: number, answer: string): Promise<ValidateAnswerResponse> {
-  const params = new URLSearchParams({ questionId: String(questionId), answer });
-  const response = await fetch(`${API_BASE}/answers/validate?${params}`);
+export async function validateAnswer(sessionId: number, params: { questionId: number, answer: string }): Promise<ValidateAnswerResponse> {
+  const response = await fetch(`${API_BASE}/game-sessions/${sessionId}/answer`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
   if (!response.ok) throw new Error('Failed to validate answer');
   return response.json();
 }
