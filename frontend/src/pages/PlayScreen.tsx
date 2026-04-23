@@ -1,6 +1,6 @@
 import { createEffect, createResource, createSignal, For, Show } from 'solid-js';
 import { PlayLayout } from '../components/layout';
-import { getLetters, getQuizQuestions, Letter } from '../api';
+import { getLetters, getQuizQuestions, Letter, validateAnswer } from '../api';
 import clsx from 'clsx';
 import { Button } from '../components/Button';
 import z from 'zod';
@@ -47,7 +47,12 @@ function PlayScreen() {
     debounceTimer = setTimeout(() => {
       const result = AnswerSchema.safeParse({ answer: value });
       setError(!result.success);
-    }, 300);
+    }, 200);
+  }
+
+  const clearValue = () => {
+    setAnswer("");
+    setError(true);
   }
 
   const onNextLetter = () => {
@@ -68,9 +73,18 @@ function PlayScreen() {
     }
   }
 
-  const handleSubmit = (e: Event) => {
+  const handleSubmit = async (e: Event) => {
     e.preventDefault();
-    setAnswer("");
+    clearValue();
+    const questionId = currentQuestion()?.id;
+    try {
+      if (questionId) {
+        const response = await validateAnswer(1, { questionId, answer: answer() });
+        console.log(response);
+      }
+    } catch (error) {
+      console.error(error);
+    }
     const currentId = currentLetter()?.id ?? 0;
     if (currentId) {
       setCorrectIds(prev => new Set([...prev, currentId]));
