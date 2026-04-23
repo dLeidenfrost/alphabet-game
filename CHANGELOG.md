@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.9.0...alphabet-game-v0.10.0) (2026-04-23)
+
+
+### Features
+
+* add endpoint to get quiz questions by quiz id ([#22](https://github.com/dLeidenfrost/alphabet-game/issues/22)) ([0e142f7](https://github.com/dLeidenfrost/alphabet-game/commit/0e142f78574cd1770cafca5a3f77b5d38a13d4cf))
+
 ## [0.9.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.8.0...alphabet-game-v0.9.0) (2026-04-18)
 
 
