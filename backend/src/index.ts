@@ -99,8 +99,8 @@ fastify.post<{ Body: { userId: number, quizId: number, currentQuestionId: number
   return { message: 'Cannnot initiate game session (missing parameters)' };
 });
 
-fastify.get<{ Params: { questionId: number, answer: string } }>('/api/answers/validate', async (request, reply) => {
-  const { questionId, answer } = request.params;
+fastify.get<{ Querystring: { questionId: number, answer: string } }>('/api/answers/validate', async (request, reply) => {
+  const { questionId, answer } = request.query;
 
   if (!questionId || !answer) {
     return reply.code(400).send({ message: 'sessionId, questionId and answer are required' });
