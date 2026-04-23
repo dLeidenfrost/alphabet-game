@@ -76,6 +76,17 @@ export async function getLetters(): Promise<Letter[]> {
 
 // --- Questions ---
 
+export interface QuizQuestion {
+  question: string;
+  hint: string | null;
+}
+
+export async function getQuizQuestions(quizId: number): Promise<QuizQuestion[]> {
+  const response = await fetch(`${API_BASE}/quizzes/${quizId}/questions`);
+  if (!response.ok) throw new Error('Failed to get quiz questions');
+  return response.json();
+}
+
 export async function getQuestion(quizId: number, letterId: number): Promise<Question> {
   const response = await fetch(`${API_BASE}/questions?quizId=${quizId}&letterId=${letterId}`);
   if (!response.ok) throw new Error('Failed to get question');
