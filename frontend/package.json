@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
+    "@kobalte/core": "^0.13.11",
     "@solidjs/router": "^0.16.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",

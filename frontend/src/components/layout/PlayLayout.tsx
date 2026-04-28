@@ -13,7 +13,7 @@ export function PlayLayout(props: LayoutProps) {
   const { formatTime, timeLeft } = useTimer(() => merged.timeLimit);
 
   return (
-    <div class="bg-gray-100">
+    <div class="bg-gray-100 max-w-sm mx-auto">
       <header class="bg-white border-b border-gray-200 bg-white">
         <div class="flex items-center p-5">
           <A href="/">
@@ -44,7 +44,7 @@ export function PlayLayout(props: LayoutProps) {
           <div class={clsx('bg-green-400 h-full origin-left transition-transform duration-1000 ease-linear')} style={{ transform: `scaleX(${timeLeft() / merged.timeLimit})` }} />
         </div>
       </header>
-      <main class="max-w-4xl mx-auto pt-4 max-h-[600px] overflow-auto">
+      <main class="pt-4">
         {props.children}
       </main>
     </div>

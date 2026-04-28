@@ -1,9 +1,10 @@
-import { createEffect, createResource, createSignal, For, Show } from 'solid-js';
+import { createEffect, createResource, createSignal, For, onMount, Show } from 'solid-js';
 import { PlayLayout } from '../components/layout';
 import { getLetters, getQuizQuestions, Letter, validateAnswer } from '../api';
 import clsx from 'clsx';
 import { Button } from '../components/Button';
 import z from 'zod';
+import { getSession } from '../helpers/cookies';
 
 const AnswerSchema = z.object({
   answer: z.string().min(1),
@@ -91,6 +92,11 @@ function PlayScreen() {
     }
     onNextLetter();
   }
+
+  onMount(() => {
+    const session = getSession();
+    console.log('current session: ', session);
+  })
 
   return (
     <PlayLayout timeLimit={180}>

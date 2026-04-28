@@ -1,18 +1,24 @@
-import { createEffect, createResource, createSignal, For, onCleanup, Show } from 'solid-js';
+import { createEffect, createResource, createSignal, For, onCleanup, onMount, Show } from 'solid-js';
 import { getQuizzes, Quiz } from '../api';
 import clsx from 'clsx';
-import { A } from '@solidjs/router';
 import { Button } from '../components/Button';
 import { Layout } from '../components/layout';
+import { UsernameDialog } from '../components/dialog';
+import { createGameSession, createUser } from '../db/operations';
+import { clearSession, getSession, setSession } from '../helpers/cookies';
+import { useNavigate } from '@solidjs/router';
 
 function HomeScreen() {
   const [page, setPage] = createSignal(1);
-  const [data] = createResource(() => ({ rowsPerPage: 6, page: page() }), getQuizzes);
+  const [data] = createResource(() => ({ rowsPerPage: 8, page: page() }), getQuizzes);
   const [selected, setSelected] = createSignal(0);
   const [quizzes, setQuizzes] = createSignal<Quiz[]>([]);
   const [total, setTotal] = createSignal(0);
+  const [open, setOpen] = createSignal(false);
 
-  let observer: IntersectionObserver;
+  const navigate = useNavigate();
+
+  let currentQuizId: number | undefined;
 
   function onClick(id: number) {
     if (id != null) {
@@ -20,8 +26,9 @@ function HomeScreen() {
     }
   }
 
-  function onStartQuiz(e: MouseEvent) {
-    e.stopPropagation();
+  function onStartQuiz(id: number) {
+    currentQuizId = id;
+    setOpen(true);
   }
 
   createEffect(() => {
@@ -33,17 +40,45 @@ function HomeScreen() {
 
   const hasMore = () => quizzes().length < total();
 
-  function setLoaderRef(el: HTMLDivElement) {
-    observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && !data.loading && hasMore()) {
+  const setLoaderRef = (el: HTMLDivElement) => {
+    const observer = new IntersectionObserver(entries => {
+      const entry = entries[0];
+      if (entry.isIntersecting && !data.loading && hasMore()) {
         setPage(prev => prev + 1);
       }
-    }, { threshold: 0.1 });
+    }, { threshold: 1 });
 
-    observer.observe(el);
+    if (observer) {
+      observer.observe(el);
+    }
 
     onCleanup(() => observer?.disconnect());
   }
+
+  const onCreateUser = async (username: string) => {
+    try {
+      console.log('create this user: ', username);
+      const userId = await createUser(username);
+      if (userId && currentQuizId) {
+        const sessionId = await createGameSession({
+          userId,
+          quizId: currentQuizId,
+        });
+        setSession(userId.toString(), sessionId.toString());
+        navigate("/play");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  onMount(() => {
+    const session = getSession();
+    if (session) {
+      clearSession();
+      console.log("home session: ", getSession());
+    }
+  });
 
   return (
     <Layout>
@@ -80,9 +115,14 @@ function HomeScreen() {
                             <p class="text-white">{item.difficulty}</p>
                           </div>
                         </div>
-                        <A href="/play">
-                          <Button onClick={onStartQuiz}>Start Quiz</Button>
-                        </A>
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            onStartQuiz(item.id);
+                          }}
+                        >
+                          Start Quiz
+                        </Button>
                       </div>
                     </Show>
                   </li>
@@ -104,6 +144,15 @@ function HomeScreen() {
           </Show>
         </Show>
       </Show>
+      <UsernameDialog
+        open={open()}
+        onConfirm={username => {
+          onCreateUser(username);
+        }}
+        onOpenChange={isOpen => {
+          setOpen(isOpen);
+        }}
+      />
     </Layout>
   );
 }
