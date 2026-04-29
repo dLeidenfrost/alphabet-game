@@ -6,16 +6,18 @@ import { Button } from '../components/Button';
 import z from 'zod';
 import { getSession } from '../helpers/cookies';
 import { upsertGameSessionQuestion } from '../db/operations';
-import { useNavigate } from '@solidjs/router';
+import { useNavigate, useSearchParams } from '@solidjs/router';
 
 const AnswerSchema = z.object({
   answer: z.string().min(1),
 });
 
 function PlayScreen() {
-  const [lettersData] = createResource(getLetters);
-  const [questionsData] = createResource(() => 1, getQuizQuestions);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
+  const [lettersData] = createResource(getLetters);
+  const [questionsData] = createResource(() => searchParams?.id ? parseInt(searchParams.id.toString()) : 1, getQuizQuestions);
   const [currentLetter, setCurrentLetter] = createSignal<Letter | undefined>();
   const [answer, setAnswer] = createSignal("");
   const [error, setError] = createSignal(true);
@@ -26,14 +28,18 @@ function PlayScreen() {
   let debounceTimer: number | undefined;
   let inputRef: HTMLInputElement | undefined;
 
-  const navigate = useNavigate();
-
   createEffect(() => {
     if (lettersData()) {
       const letter = lettersData()?.[0];
       if (letter?.id) {
         setCurrentLetter(letter);
       }
+    }
+  })
+
+  createEffect(() => {
+    if (!searchParams?.id) {
+      navigate("/", { replace: true });
     }
   })
 
@@ -132,7 +138,7 @@ function PlayScreen() {
     }
   }
 
-  const onCorrectAnswer = () => {
+  const onCorrectAnswer = async () => {
     const currentId = currentLetter()?.id ?? 0;
     if (currentId) {
       if (incorrectIds().has(currentId)) {
@@ -155,21 +161,20 @@ function PlayScreen() {
     try {
       if (questionId) {
         const response = await validateAnswer({ questionId, answer: answer() });
-        if (response?.isCorrect) {
-          const session = getSession();
-          if (session.sessionId) {
-            const id = await upsertGameSessionQuestion(parseInt(session.sessionId), questionId, true);
-            if (!id) {
-              console.error(new Error("Error saving this answer"));
-              return;
-            }
-            onCorrectAnswer();
-            onNextLetter();
+        const session = getSession();
+        if (session.sessionId) {
+          const id = await upsertGameSessionQuestion(parseInt(session.sessionId), questionId, response?.isCorrect ?? false);
+          if (!id) {
+            console.error(new Error("Error saving this answer"));
+            return;
           }
+        }
+        if (response?.isCorrect) {
+          onCorrectAnswer();
         } else {
           onBadAnswer();
-          onNextLetter();
         }
+        onNextLetter();
       }
     } catch (error) {
       console.error(error);

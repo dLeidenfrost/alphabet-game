@@ -26,10 +26,21 @@ function HomeScreen() {
     }
   }
 
-  function onStartQuiz(id: number) {
+  async function onPlay(userId: string, username: string, quizId: number) {
+    const sessionId = await createGameSession({
+      userId: parseInt(userId),
+      quizId,
+    });
+    setSession(userId, sessionId.toString(), username);
+    const query = new URLSearchParams();
+    query.set("id", quizId.toString());
+    navigate(`/play?${query}`);
+  }
+
+  async function onStartQuiz(id: number) {
     const session = getSession();
-    if (session?.sessionId) {
-      navigate("/play");
+    if (session?.userId && session?.username) {
+      onPlay(session.userId, session.username, id);
       return;
     }
     currentQuizId = id;
@@ -51,7 +62,7 @@ function HomeScreen() {
       if (entry.isIntersecting && !data.loading && hasMore()) {
         setPage(prev => prev + 1);
       }
-    }, { threshold: 1 });
+    }, { threshold: 0.5 });
 
     if (observer) {
       observer.observe(el);
@@ -62,15 +73,9 @@ function HomeScreen() {
 
   const onCreateUser = async (username: string) => {
     try {
-      console.log('create this user: ', username);
       const userId = await createUser(username);
       if (userId && currentQuizId) {
-        const sessionId = await createGameSession({
-          userId,
-          quizId: currentQuizId,
-        });
-        setSession(userId.toString(), sessionId.toString(), username);
-        navigate("/play");
+        onPlay(userId.toString(), username, currentQuizId);
       }
     } catch (error) {
       console.error(error);
