@@ -44,6 +44,26 @@ export async function createGameSession(params: {
   return id;
 }
 
+export async function updateGameSession(sessionId: number, params: {
+  currentQuestionId?: number;
+  score?: number;
+}): Promise<boolean> {
+  const db = await getDb();
+
+  if (!params?.currentQuestionId && !params.score) {
+    return false;
+  }
+
+  const existing = db.select({ id: gameSessions.id }).from(gameSessions).where(eq(gameSessions.id, sessionId)).get();
+  if (existing) {
+    db.update(gameSessions).set({ currentQuestionId: params?.currentQuestionId, score: params?.score }).where(eq(gameSessions.id, sessionId)).run();
+    await persistDb();
+    return true;
+  }
+
+  return false;
+}
+
 export async function upsertGameSessionQuestion(
   sessionId: number,
   questionId: number,
@@ -86,4 +106,10 @@ export async function upsertGameSessionQuestion(
 
   await persistDb();
   return created.id;
+}
+
+export async function getGameSessionQuestions(sessionId: number) {
+  const db = await getDb();
+  const data = db.query.gameSessionQuestions.findMany({ where: eq(gameSessionQuestions.gameSessionId, sessionId) });
+  return data;
 }

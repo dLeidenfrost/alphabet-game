@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.12.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.11.0...alphabet-game-v0.12.0) (2026-04-29)
+
+
+### Features
+
+* test versioning. ([#28](https://github.com/dLeidenfrost/alphabet-game/issues/28)) ([2d8ca49](https://github.com/dLeidenfrost/alphabet-game/commit/2d8ca49615ce9d1c09310bb80c3025f54c42a68e))
+
+## [0.11.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.10.0...alphabet-game-v0.11.0) (2026-04-23)
+
+
+### Features
+
+* client-side SQLite DB for local user and game session persistence ([#24](https://github.com/dLeidenfrost/alphabet-game/issues/24)) ([e6a703d](https://github.com/dLeidenfrost/alphabet-game/commit/e6a703d08dacb0aefbf1ea4052b688ba72dc6e11))
+
 ## [0.10.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.9.0...alphabet-game-v0.10.0) (2026-04-23)
 
 
