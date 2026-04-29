@@ -8,11 +8,13 @@
 
   --color-title: oklch(0.2178 0 0);
   --color-subtitle: oklch(0.5103 0 0);
-  --color-list-item: oklch(0.9702 0 0);
-  --color-light-gray: oklch(0.5103 0 0);
+  --color-list-item: oklch(0.98 0 0);
+  --color-light-gray: oklch(0.52 0 0);
 
   --color-gradient-start: oklch(0.72 0.18 287);
   --color-gradient-end: oklch(0.55 0.16 287);
+
+  --color-dark: oklch(0.21 0 0);
 
   --font-inter: 'Inter Variable', sans-serif;
 }

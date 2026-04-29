@@ -13,19 +13,22 @@ export function deleteCookie(name: string) {
 }
 
 // Session helpers
-export function setSession(userId: string, sessionId: string) {
+export function setSession(userId: string, sessionId: string, username: string) {
   setCookie('userId', userId);
   setCookie('sessionId', sessionId);
+  setCookie('username', username);
 }
 
 export function getSession() {
   return {
     userId: getCookie('userId'),
     sessionId: getCookie('sessionId'),
+    username: getCookie('username'),
   };
 }
 
 export function clearSession() {
   deleteCookie('userId');
   deleteCookie('sessionId');
+  deleteCookie('username');
 }

@@ -1,10 +1,12 @@
-import { createEffect, createResource, createSignal, For, onMount, Show } from 'solid-js';
+import { createEffect, createResource, createSignal, For, Show } from 'solid-js';
 import { PlayLayout } from '../components/layout';
 import { getLetters, getQuizQuestions, Letter, validateAnswer } from '../api';
 import clsx from 'clsx';
 import { Button } from '../components/Button';
 import z from 'zod';
 import { getSession } from '../helpers/cookies';
+import { upsertGameSessionQuestion } from '../db/operations';
+import { useNavigate } from '@solidjs/router';
 
 const AnswerSchema = z.object({
   answer: z.string().min(1),
@@ -19,8 +21,12 @@ function PlayScreen() {
   const [error, setError] = createSignal(true);
   const [skippedIds, setSkippedIds] = createSignal(new Set<number>());
   const [correctIds, setCorrectIds] = createSignal(new Set<number>());
+  const [incorrectIds, setIncorrectIds] = createSignal(new Set<number>());
 
   let debounceTimer: number | undefined;
+  let inputRef: HTMLInputElement | undefined;
+
+  const navigate = useNavigate();
 
   createEffect(() => {
     if (lettersData()) {
@@ -56,47 +62,132 @@ function PlayScreen() {
     setError(true);
   }
 
-  const onNextLetter = () => {
+  const getNextId = () => {
     const currentId = currentLetter()?.id ?? 0;
-    const nextId = currentId + 1;
-    if (nextId) {
-      const nextLetter = lettersData()?.find(l => l.id === nextId);
+    const iterator = skippedIds().values();
+
+    for (const id of iterator) {
+      if (id > currentId) {
+        return id;
+      }
+    }
+    return skippedIds().values().next().value;
+  }
+
+  const goToSkippedLetters = () => {
+    const firstSkippedId = getNextId();
+    if (firstSkippedId) {
+      const nextLetter = lettersData()?.find(l => l.id === firstSkippedId);
       if (nextLetter) {
         setCurrentLetter(nextLetter);
       }
     }
   }
 
+  const onNextLetter = () => {
+    clearValue();
+    const currentId = currentLetter()?.id ?? 0;
+    const nextId = currentId + 1;
+    if (nextId) {
+      const nextLetter = lettersData()?.find(l => l.id === nextId);
+      if (!nextLetter || incorrectIds().has(nextId) || correctIds().has(nextId)) {
+        goToSkippedLetters();
+      } else if (nextLetter) {
+        setCurrentLetter(nextLetter);
+      }
+    }
+    if (inputRef) {
+      inputRef.focus();
+    }
+  }
+
   const onSkipLetter = (id?: number) => {
     if (id) {
-      setSkippedIds(prev => new Set([...prev, id]));
+      if (!skippedIds().has(id)) {
+        setSkippedIds(prev => new Set([...prev, id]));
+      }
       onNextLetter();
+    }
+  }
+
+  const onDeleteSkippedLetter = (id?: number) => {
+    if (id) {
+      if (skippedIds().has(id)) {
+        setSkippedIds(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(id);
+          return newSet;
+        });
+      }
+    }
+  }
+
+  const onBadAnswer = () => {
+    const currentId = currentLetter()?.id ?? 0;
+    if (currentId) {
+      if (!incorrectIds().has(currentId)) {
+        setIncorrectIds(prev => new Set([...prev, currentId]));
+      }
+      onDeleteSkippedLetter(currentId);
+    }
+  }
+
+  const onCorrectAnswer = () => {
+    const currentId = currentLetter()?.id ?? 0;
+    if (currentId) {
+      if (incorrectIds().has(currentId)) {
+        setIncorrectIds(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(currentId);
+          return newSet;
+        });
+      }
+      if (!correctIds().has(currentId)) {
+        setCorrectIds(prev => new Set([...prev, currentId]));
+      }
+      onDeleteSkippedLetter(currentId);
     }
   }
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
-    clearValue();
     const questionId = currentQuestion()?.id;
     try {
       if (questionId) {
-        const response = await validateAnswer(1, { questionId, answer: answer() });
-        console.log(response);
+        const response = await validateAnswer({ questionId, answer: answer() });
+        if (response?.isCorrect) {
+          const session = getSession();
+          if (session.sessionId) {
+            const id = await upsertGameSessionQuestion(parseInt(session.sessionId), questionId, true);
+            if (!id) {
+              console.error(new Error("Error saving this answer"));
+              return;
+            }
+            onCorrectAnswer();
+            onNextLetter();
+          }
+        } else {
+          onBadAnswer();
+          onNextLetter();
+        }
       }
     } catch (error) {
       console.error(error);
     }
-    const currentId = currentLetter()?.id ?? 0;
-    if (currentId) {
-      setCorrectIds(prev => new Set([...prev, currentId]));
-    }
-    onNextLetter();
   }
 
-  onMount(() => {
-    const session = getSession();
-    console.log('current session: ', session);
-  })
+  createEffect(() => {
+    if (lettersData.loading) {
+      return;
+    }
+    const correct = correctIds().size;
+    const incorrect = incorrectIds().size;
+    const answered = correct + incorrect;
+    const total = lettersData()?.length ?? 0;
+    if (answered >= total) {
+      navigate(`/finish`);
+    }
+  });
 
   return (
     <PlayLayout timeLimit={180}>
@@ -105,7 +196,7 @@ function PlayScreen() {
           <For each={lettersData()}>
             {item => {
               return (
-                <button class={clsx("size-6 rounded-md bg-gray-200 text-gray-600 hover:bg-secondary hover:text-white font-semibold leading-none cursor-pointer", currentLetter()?.id === item.id && "bg-secondary text-white size-7", skippedIds().has(item.id) && "bg-orange-100 text-orange-500", correctIds().has(item.id) && "bg-green-100 text-green-500")}>{item.letter.toUpperCase()}</button>
+                <button class={clsx("size-6 rounded-md bg-gray-200 text-gray-600 hover:bg-secondary hover:text-white font-semibold leading-none cursor-pointer", currentLetter()?.id === item.id && "bg-secondary text-white size-7", skippedIds().has(item.id) && "bg-orange-100 text-orange-500", correctIds().has(item.id) && "bg-green-100 text-green-500", incorrectIds().has(item.id) && "bg-red-100 text-red-500")}>{item.letter.toUpperCase()}</button>
               )
             }}
           </For>
@@ -134,7 +225,16 @@ function PlayScreen() {
               <form onSubmit={handleSubmit}>
                 <div class="flex items-center px-2 border-2 border-gray-200 rounded-lg w-full h-10 text-gray-400 focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/20 focus-within:text-secondary transition-colors">
                   <span class="font-bold text-sm border-r border-gray-200 px-2 mr-2">{currentLetter()?.letter?.toUpperCase()}</span>
-                  <input class="appearance-none w-full h-full outline-none ring-0 text-black" type="text" value={answer()} onInput={handleInput} />
+                  <input
+                    ref={el => {
+                      setTimeout(() => el.focus(), 0);
+                      inputRef = el;
+                    }}
+                    class="appearance-none w-full h-full outline-none ring-0 text-black"
+                    type="text"
+                    value={answer()}
+                    onInput={handleInput}
+                  />
                 </div>
                 <div class="mt-2 grid grid-cols-4 gap-2">
                   <Button type="submit" disabled={error()} class="col-span-3">Submit</Button>

@@ -1,7 +1,8 @@
-import { JSX, mergeProps } from "solid-js";
+import { createSignal, JSX, mergeProps, onMount } from "solid-js";
 import { useTimer } from "../../helpers/timer";
 import clsx from "clsx";
 import { A } from "@solidjs/router";
+import { getSession } from "../../helpers/cookies";
 
 interface LayoutProps {
   children: JSX.Element;
@@ -11,6 +12,14 @@ interface LayoutProps {
 export function PlayLayout(props: LayoutProps) {
   const merged = mergeProps({ timeLimit: 0 }, props);
   const { formatTime, timeLeft } = useTimer(() => merged.timeLimit);
+  const [user, setUser] = createSignal("");
+
+  onMount(() => {
+    const session = getSession();
+    if (session?.username) {
+      setUser(session.username);
+    }
+  })
 
   return (
     <div class="bg-gray-100 max-w-sm mx-auto">
@@ -24,16 +33,8 @@ export function PlayLayout(props: LayoutProps) {
               <span class="text-sm">Leave</span>
             </button>
           </A>
-          <div class="flex ml-auto">
-            <div class="flex items-center gap-1 text-xs">
-              <span class="text-green-500 font-semibold">6</span>
-              <span>correct</span>
-              <span class="text-gray-600">·</span>
-            </div>
-            <div class="flex items-center gap-1 text-xs ml-1">
-              <span class="text-red-500 font-semibold">1</span>
-              <span>wrong</span>
-            </div>
+          <div class="flex items-center ml-auto">
+            <span class="text-light-gray text-sm">{user()}</span>
             <span class="mx-2 text-gray-400 h-1/2">|</span>
             <div class="text-gray-400 font-semibold w-9">
               {formatTime()}
