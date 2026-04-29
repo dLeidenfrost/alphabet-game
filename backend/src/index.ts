@@ -2,7 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { db } from './db';
 import { answers, gameSessions, letters, questions, quizzes, users } from './db/schema';
-import { and, eq, sql } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 
 const fastify = Fastify({
   logger: true,
@@ -155,6 +155,30 @@ fastify.get<{ Params: { id: string } }>('/api/quizzes/:id/questions', async (req
     .select({ hint: questions.hint, question: questions.question, id: questions.id, letterId: questions.letterId })
     .from(questions)
     .where(eq(questions.quizId, quizId));
+  return result;
+});
+
+fastify.get<{ Params: { id: string }; Querystring: { letterIds: string } }>('/api/quizzes/:id/questions-with-answers', async (request, reply) => {
+  const quizId = Number(request.params.id);
+  const letterIds = request.query.letterIds?.split(',').map(Number).filter(Boolean);
+
+  if (!letterIds?.length) return reply.code(400).send({ message: 'letterIds query param is required' });
+
+  const quiz = await db.query.quizzes.findFirst({ where: eq(quizzes.id, quizId) });
+  if (!quiz) return reply.code(404).send({ message: 'Quiz not found' });
+
+  const result = await db
+    .select({
+      questionId: questions.id,
+      question: questions.question,
+      hint: questions.hint,
+      letterId: questions.letterId,
+      answer: answers.answer,
+    })
+    .from(questions)
+    .innerJoin(answers, eq(answers.questionId, questions.id))
+    .where(and(eq(questions.quizId, quizId), inArray(questions.letterId, letterIds)));
+
   return result;
 });
 
