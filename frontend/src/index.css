@@ -4,17 +4,23 @@
 @theme {
   --color-primary: oklch(0.4699 0.0327 298.86);
   --color-secondary: oklch(0.6744 0.1772 282.01);
+  --color-accent: oklch(0.72 0.18 287);
+
   --color-title: oklch(0.2178 0 0);
   --color-subtitle: oklch(0.5103 0 0);
-  --color-list-item: oklch(0.9702 0 0);
-  --color-light-gray: oklch(0.5103 0 0);
+  --color-list-item: oklch(0.98 0 0);
+  --color-light-gray: oklch(0.52 0 0);
+
+  --color-gradient-start: oklch(0.72 0.18 287);
+  --color-gradient-end: oklch(0.55 0.16 287);
+
+  --color-dark: oklch(0.21 0 0);
 
   --font-inter: 'Inter Variable', sans-serif;
 }
 
 body {
-  max-width: 375px;
-  margin: 0 auto;
+  max-height: 100vh;
   background: var(--color-slate-200);
   font-family: var(--font-inter);
   -webkit-font-smoothing: antialiased;

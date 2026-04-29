@@ -93,12 +93,16 @@ export async function getQuestion(quizId: number, letterId: number): Promise<Que
 
 // --- Answers ---
 
-export async function validateAnswer(sessionId: number, params: { questionId: number, answer: string }): Promise<ValidateAnswerResponse> {
-  const response = await fetch(`${API_BASE}/game-sessions/${sessionId}/answer`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(params),
-  });
+export async function validateAnswer(params: { questionId: number, answer: string }): Promise<ValidateAnswerResponse> {
+  const query = new URLSearchParams();
+  if (params?.questionId) {
+    query.set('questionId', String(params.questionId));
+  }
+  if (params?.answer) {
+    query.set('answer', String(params.answer));
+  }
+  const url = query.toString() ? `${API_BASE}/answers/validate?${query}` : `${API_BASE}/answers/validate`;
+  const response = await fetch(url);
   if (!response.ok) throw new Error('Failed to validate answer');
   return response.json();
 }
