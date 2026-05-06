@@ -61,9 +61,11 @@ function FinishScreen() {
         <Show when={Boolean(selected())}>
           <hr class="mt-2 mb-4 border-gray-200" />
           <div class="text-left flex flex-col gap-4">
-            <div class="flex items-center">
+            <div class="flex items-center justify-between">
               <p class="text-[0.6875rem] font-semibold uppercase text-light-gray">Letter K</p>
-              <button class="text-light-gray hover:cursor-pointer">×</button>
+              <button class="text-light-gray hover:opacity-70 hover:cursor-pointer w-4 h-4 flex items-center justify-center" onClick={() => {
+                setSelected(0);
+              }}>×</button>
             </div>
             <p class="text-[0.875rem]">The SI unit of temperature where 0 equals absolute zero.</p>
           </div>
