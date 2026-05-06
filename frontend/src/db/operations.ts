@@ -108,8 +108,14 @@ export async function upsertGameSessionQuestion(
   return created.id;
 }
 
-export async function getGameSessionQuestions(sessionId: number) {
+export async function getGameSessionQuestions(sessionId: number, isAnswered?: boolean) {
+  if (!sessionId) {
+    return [];
+  }
   const db = await getDb();
-  const data = db.query.gameSessionQuestions.findMany({ where: eq(gameSessionQuestions.gameSessionId, sessionId) });
+  const data = await db
+    .select()
+    .from(gameSessionQuestions)
+    .where(and(eq(gameSessionQuestions.gameSessionId, sessionId), isAnswered != null ? eq(gameSessionQuestions.isAnswered, isAnswered) : undefined));
   return data;
 }

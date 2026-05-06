@@ -42,6 +42,14 @@ export interface ValidateAnswerResponse {
   isCorrect: boolean;
 }
 
+export interface QuestionAnswer {
+  questionId: number,
+  question: string,
+  hint: string,
+  letterId: number,
+  answer: string
+}
+
 // --- Users ---
 
 export async function getUserById(id: number): Promise<User> {
@@ -104,6 +112,17 @@ export async function validateAnswer(params: { questionId: number, answer: strin
   const url = query.toString() ? `${API_BASE}/answers/validate?${query}` : `${API_BASE}/answers/validate`;
   const response = await fetch(url);
   if (!response.ok) throw new Error('Failed to validate answer');
+  return response.json();
+}
+
+export async function getQuestionsWithAnswers(quizId: number, questionIds: string): Promise<QuestionAnswer[]> {
+  const query = new URLSearchParams();
+  if (questionIds) {
+    query.set('questionIds', questionIds);
+  }
+  const url = query.toString() ? `${API_BASE}/quizzes/${quizId}/questions-with-answers?${query}` : `${API_BASE}/quizzes/${quizId}/questions-with-answers`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Failed to questions with answers');
   return response.json();
 }
 
