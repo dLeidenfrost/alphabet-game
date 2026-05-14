@@ -1,4 +1,4 @@
-import { eq, and } from 'drizzle-orm';
+import { eq, and, isNotNull } from 'drizzle-orm';
 import { getDb, persistDb } from './index';
 import { users, gameSessions, gameSessionQuestions } from './schema';
 
@@ -118,4 +118,30 @@ export async function getGameSessionQuestions(sessionId: number, isAnswered?: bo
     .from(gameSessionQuestions)
     .where(and(eq(gameSessionQuestions.gameSessionId, sessionId), isAnswered != null ? eq(gameSessionQuestions.isAnswered, isAnswered) : undefined));
   return data;
+}
+
+export async function getIsQuizCompleted(quizId: number) {
+  if (!quizId) {
+    return false;
+  }
+  const db = await getDb();
+  const session = await db.query.gameSessions.findFirst({
+    where: and(
+      eq(gameSessions.quizId, quizId),
+      isNotNull(gameSessions.completedAt)
+    ),
+  });
+  return session?.id;
+}
+
+export async function onCompleteGameSession(sessionId: number) {
+  if (!sessionId) {
+    return;
+  }
+  const db = await getDb();
+  db.update(gameSessions)
+    .set({ completedAt: new Date() })
+    .where(eq(gameSessions.id, sessionId))
+    .run();
+  await persistDb();
 }

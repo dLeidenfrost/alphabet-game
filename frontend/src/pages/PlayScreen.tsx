@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { Button } from '../components/Button';
 import z from 'zod';
 import { getSession } from '../helpers/cookies';
-import { upsertGameSessionQuestion } from '../db/operations';
+import { onCompleteGameSession, upsertGameSessionQuestion } from '../db/operations';
 import { useNavigate, useSearchParams } from '@solidjs/router';
 
 const AnswerSchema = z.object({
@@ -17,7 +17,7 @@ function PlayScreen() {
   const navigate = useNavigate();
 
   const [lettersData] = createResource(getLetters);
-  const [questionsData] = createResource(() => searchParams?.id ? parseInt(searchParams.id.toString()) : 1, getQuizQuestions);
+  const [questionsData] = createResource(() => searchParams?.id ? parseInt(searchParams.id.toString()) : null, getQuizQuestions);
   const [currentLetter, setCurrentLetter] = createSignal<Letter | undefined>();
   const [answer, setAnswer] = createSignal("");
   const [error, setError] = createSignal(true);
@@ -189,8 +189,14 @@ function PlayScreen() {
     const incorrect = incorrectIds().size;
     const answered = correct + incorrect;
     const total = lettersData()?.length ?? 0;
+    const session = getSession();
     if (answered >= total) {
-      navigate(`/finish`);
+      (async () => {
+        if (session?.sessionId) {
+          await onCompleteGameSession(parseInt(session.sessionId));
+        }
+      })();
+      navigate(`/finish?id=${searchParams?.id}&s=${session.sessionId}`);
     }
   });
 
