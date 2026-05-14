@@ -158,11 +158,11 @@ fastify.get<{ Params: { id: string } }>('/api/quizzes/:id/questions', async (req
   return result;
 });
 
-fastify.get<{ Params: { id: string }; Querystring: { letterIds: string } }>('/api/quizzes/:id/questions-with-answers', async (request, reply) => {
+fastify.get<{ Params: { id: string }; Querystring: { questionIds: string } }>('/api/quizzes/:id/questions-with-answers', async (request, reply) => {
   const quizId = Number(request.params.id);
-  const letterIds = request.query.letterIds?.split(',').map(Number).filter(Boolean);
+  const questionIds = request.query.questionIds?.split(',').map(Number).filter(Boolean);
 
-  if (!letterIds?.length) return reply.code(400).send({ message: 'letterIds query param is required' });
+  if (!questionIds?.length) return reply.code(400).send({ message: 'questionIds query param is required' });
 
   const quiz = await db.query.quizzes.findFirst({ where: eq(quizzes.id, quizId) });
   if (!quiz) return reply.code(404).send({ message: 'Quiz not found' });
@@ -177,7 +177,7 @@ fastify.get<{ Params: { id: string }; Querystring: { letterIds: string } }>('/ap
     })
     .from(questions)
     .innerJoin(answers, eq(answers.questionId, questions.id))
-    .where(and(eq(questions.quizId, quizId), inArray(questions.letterId, letterIds)));
+    .where(and(eq(questions.quizId, quizId), inArray(questions.id, questionIds)));
 
   return result;
 });

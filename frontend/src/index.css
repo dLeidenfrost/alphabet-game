@@ -5,6 +5,7 @@
   --color-primary: oklch(0.4699 0.0327 298.86);
   --color-secondary: oklch(0.6744 0.1772 282.01);
   --color-accent: oklch(0.72 0.18 287);
+  --color-accent-dark: oklch(0.55 0.16 287);
 
   --color-title: oklch(0.2178 0 0);
   --color-subtitle: oklch(0.5103 0 0);
@@ -15,6 +16,14 @@
   --color-gradient-end: oklch(0.55 0.16 287);
 
   --color-dark: oklch(0.21 0 0);
+
+  --color-error-from: oklch(0.9 0.04 15);
+  --color-error-to: oklch(0.68 0.12 22);
+  --color-red-dark: oklch(0.4 0.15 25);
+  --color-error: oklch(0.45 0.15 25);
+
+  --color-green-dark: oklch(0.48 0.12 130);
+  --color-grid-item: oklch(0.95 0.03 145);
 
   --font-inter: 'Inter Variable', sans-serif;
 }
