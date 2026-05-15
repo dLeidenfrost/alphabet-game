@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.13.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.12.0...alphabet-game-v0.13.0) (2026-05-15)
+
+
+### Features
+
+* add endpoint to fetch questions with answers by letter IDs ([#30](https://github.com/dLeidenfrost/alphabet-game/issues/30)) ([0490d01](https://github.com/dLeidenfrost/alphabet-game/commit/0490d0108bc9893e9dfd95af5a36ff809fb19bc8))
+* Added finish screen content ([32fff71](https://github.com/dLeidenfrost/alphabet-game/commit/32fff71ed82b591fbd8575477df49197203dbd74))
+* Added fuzziness and a new function isValidAnswer in backend endpoint. ([#33](https://github.com/dLeidenfrost/alphabet-game/issues/33)) ([be85b15](https://github.com/dLeidenfrost/alphabet-game/commit/be85b15a60df34a53c4d4ea6def7ad7d53695f1b))
+
 ## [0.12.0](https://github.com/dLeidenfrost/alphabet-game/compare/alphabet-game-v0.11.0...alphabet-game-v0.12.0) (2026-04-29)
 
 
