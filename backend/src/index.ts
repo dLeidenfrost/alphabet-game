@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import { db } from './db';
 import { answers, gameSessions, letters, questions, quizzes, users } from './db/schema';
 import { and, eq, inArray, sql } from 'drizzle-orm';
+import { isValidAnswer } from './helpers/fuzzyMatch';
 
 const fastify = Fastify({
   logger: true,
@@ -109,7 +110,7 @@ fastify.get<{ Querystring: { questionId: number, answer: string } }>('/api/answe
   const stored = await db.query.answers.findFirst({ where: eq(answers.questionId, questionId) });
   if (!stored) return reply.code(404).send({ message: 'Answer not found for this question' });
 
-  const isCorrect = stored.answer.toLowerCase() === answer.toLowerCase();
+  const isCorrect = isValidAnswer(answer, stored.answer);
 
   return { isCorrect };
 });
